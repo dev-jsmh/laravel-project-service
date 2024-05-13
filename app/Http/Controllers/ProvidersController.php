@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Provider;
-use Exception;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Facades\DB;
 
@@ -13,6 +12,10 @@ class ProvidersController extends Controller
     /**
      * This play a list of all the providers from the data base 
      */
+
+    public function index(){
+        return view('providers.create');
+    }
 
     public function getAll()
     {
@@ -39,8 +42,6 @@ class ProvidersController extends Controller
             "status" => 200,
         ], 200);
     }
-
-
     // =================================== get a specific provider by its id  ===================================
     public function getById($id)
     {
