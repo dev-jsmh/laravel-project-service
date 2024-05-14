@@ -13,15 +13,15 @@
    @csrf
    <div class="mb-3">
    <label class="from-label">Nombre</label>
-    <input class="form-control" type="text">
+    <input class="form-control" type="text" name="name" >
    </div>
    <div class="mb-3">
    <label class="from-label">Teléfono</label>
-    <input class="form-control" type="text">
+    <input class="form-control" type="text" name="phone">
    </div>
    <div class="mb-3">
    <label class="from-label">Dirección</label>
-    <input class="form-control" type="text">
+    <input class="form-control" type="text" name="address">
    </div>
    <a class="btn btn-primary" href="{{ url('/providers')}}">cancelar</a>
    <button class="btn btn-secondary" type="sudmit">crear</button>

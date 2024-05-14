@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\Provider;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 
 class ProvidersController extends Controller
 {
@@ -35,7 +36,7 @@ class ProvidersController extends Controller
     // view for add information about new providers 
     public function create()
     {
-        
+
         return view('providers.create');
     }
 
@@ -95,41 +96,19 @@ class ProvidersController extends Controller
             "data" => $newProvider,
             "status" => 200
         ];
-        return response()->json($data, 200);
+        // redirects user to the index of providers if the orperation is performed successfully
+        return redirect()->to('/providers');
     }
     // =================================== destroy ===================================
     public function destroy($id)
     {
-
         // find the provider and store in a variable
         $desiredProvider = Provider::find($id);
-        // validates if provider exists or not
-        if (!$desiredProvider) {
-            $data = [
-                'message' => 'Not found. It seems that the selected provider does not exists or have been deleted before',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        };
-
         // create sql query to delete row by id
         $sql = "delete from providers where id=?";
         // delete the provider get from data base
-        $deleteOperation = DB::delete($sql, [$id]);
-        //  check if the operation was sucessfully made
-        if (!$deleteOperation) {
-            $data = [
-                'message' => 'Not possible to delete provider ' . $id,
-                'status' => 400
-            ]; // return json with error message
-            return response()->json($data, 400);
-        };
-        // return a message inside a JSON and the status 
-        $data = [
-            'message' => 'provider ' . $id . ' deleted successfully',
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        DB::delete($sql, [$id]);
+        // redirect user to index view 
+      return redirect()->to('/providers');
     }
 }
