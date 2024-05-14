@@ -21,7 +21,11 @@ class ProvidersController extends Controller
      * This play a list of all the providers from the data base 
      */
 
-    public function index()
+    public function index(){
+        return view('providers.index');
+    }
+
+    public function getAll()
     {
 
         // Gets all the providers that exists in the data base
@@ -29,22 +33,49 @@ class ProvidersController extends Controller
         // validates if the array is empty or not 
         // i do this by counting the number of element inside the array
         // if the number is equal to cero, it means the array is empty
+        if (count($providers) ===  0) {
+            // if condition is true return the empty array and a message
+            return response()->json([
+                "message" => "There are no providers yet",
+                "data" => $providers,
+                "status" => 200,
+            ], 200);
+        };
 
-        return view('providers.index', compact('providers'));
+        // if there is any exception present catches it  and returns a json message
+        return response()->json([
+
+            "message" => "Providers retrived successfullly !",
+            "data" => $providers,
+            "status" => 200,
+        ], 200);
     }
-    // view for add information about new providers 
-    public function create()
+    // =================================== get a specific provider by its id  ===================================
+    public function getById($id)
     {
-        
-        return view('providers.create');
+        // look for the desired provider using its id number
+        // and method "find" from provider model
+        $desiredProvider = Provider::find($id);
+        // validates if the selected provider does not exists on data base
+        if (!$desiredProvider) {
+            // store some messages in an array along side provider info
+            $data = [
+                'message' => "Provider " . $id . " doesn't exists. Not found.",
+                "status" => 404
+            ];
+            // return the $data array  and status code 
+            return response()->json($data, 404);
+        }
+        // === if providers exist 
+        // store some success message in the array along side provider info
+        $data = [
+            'message' => "Provider " . $id . " selected successfully",
+            "data" => $desiredProvider,
+            "status" => 201
+        ];
+        // return the $data array  and status code when operation is success
+        return response()->json($data, 201);
     }
-
-    public function show($id)
-    {
-        $provider = Provider::find($id);
-        return view('providers.details', compact('provider'));
-    }
-
     //  ================================== store new provider info to data base =================================
     public function store(Request $request)
     {
@@ -94,6 +125,71 @@ class ProvidersController extends Controller
             "message" => "provider created succefully",
             "data" => $newProvider,
             "status" => 200
+        ];
+        return response()->json($data, 200);
+    }
+    // =================================== update ===================================
+    public function update(Request $request, $id)
+    {
+
+
+        // find the provider and store in a variable
+        $desiredProvider = Provider::find($id);
+
+        $validator = FacadesValidator::make($request->all(), [
+            'name' => 'required',
+            'phone' => 'required',
+            'address' => 'required'
+        ]);
+
+        // check if validator fails
+        if ($validator->fails()) {
+            // if true, create an array with some data 
+            $data = [
+                'message' => 'Some fields are missing',
+                'error' => $validator->errors(),
+                'status' => 400
+            ];
+            // return the response as json format and error code status 400 
+            return response()->json($data, 400);
+        }
+
+        // validates if provider exists or not
+        if (!$desiredProvider) {
+            $data = [
+                'message' => 'Not found. It seems that the provider N°: ' . $id . ' does not exists',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        };
+
+
+        $sql = 'update providers set name=?, phone=?, address=? where id=?';
+        $updated = DB::update($sql, [$request->name, $request->phone, $request->address, $id]);
+
+        if (!$updated) {
+            $data = [
+                'message' => 'Not possible to update provider info',
+                'status' => 400
+            ];
+            // return Bad Request error code to user
+            return response()->json($data, 400);
+        };
+
+        // ========= if any of the condition above are true then execute code below =========
+
+        // here i just use the provider class model to create a new object so i can 
+        // show it to the user when the code is successfully executed
+        $updatedProvider = [
+            $request->name,
+            $request->phone,
+            $request->address
+        ];
+        // store some relevant information for user in this array 
+        $data = [
+            'message' => 'provider N°: ' . $id . ' was successfully updated !',
+            'data' => $updatedProvider,
+            'status' => 200
         ];
         return response()->json($data, 200);
     }
