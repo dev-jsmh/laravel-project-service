@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 @section('title', 'index')
 @section('content')
@@ -27,7 +26,14 @@
             <td>{{ $provider->phone }}</td>
             <td>{{ $provider->address }}</td>
             <td class="d-flex">
-                <a class="btn btn-warning m-2" href="{{ url('/providers/' . $provider->id . '/details') }}"> <i class="bi bi-eye"></i> </a>
+                <!-- button that takes user to the provider detials view -->
+                <a class="btn btn-info m-2"  href="{{ url('/providers/' . $provider->id . '/details') }}">
+                    <i class="bi bi-eye"></i>
+                </a>
+                <!-- button that takes user to the edit form view --> 
+                <a class="btn btn-warning m-2" href="{{ url('/providers/' . $provider->id . '/edit') }}">
+                    <i class="bi bi-pencil"></i>
+                </a>
                 <!-- use a form here to delete a provider using the get method just in order to triger the endpoint -->
                 <form class="m-2" action="{{ url('/providers/' . $provider->id . '/delete') }}" method="GET">
                     <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i></button>
@@ -37,17 +43,12 @@
         @endforeach
     </tbody>
 </table>
-
-
 @endsection
 <!-- 
-
  * Jhonatan Samuel Martinez Hernandez
  * Software Analyts and Developer
  * code 2675859
  * SENA 
  * Year 2024
- 
  view to show a list of all resources of products
-
 -->

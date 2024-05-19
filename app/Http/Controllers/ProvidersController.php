@@ -14,14 +14,11 @@ use Illuminate\Http\Request;
 use App\Models\Provider;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 
 class ProvidersController extends Controller
 {
-    /**
-     * This play a list of all the providers from the data base 
-     */
 
+    // This play a list of all the providers from the data base 
     public function index()
     {
 
@@ -39,7 +36,7 @@ class ProvidersController extends Controller
 
         return view('providers.create');
     }
-
+    // method that returns a view with detailed information of an specified provider
     public function show($id)
     {
         $provider = Provider::find($id);
@@ -109,6 +106,40 @@ class ProvidersController extends Controller
         // delete the provider get from data base
         DB::delete($sql, [$id]);
         // redirect user to index view 
-      return redirect()->to('/providers');
+        return redirect()->to('/providers');
+    }
+    // =================================== edit view ===================================
+
+    // method to get the form so we can modify information of a provider
+    public function edit($id)
+    {
+        // find de provider using its id and the static method "find"
+        $desiredProvider = Provider::find($id);
+        // return the view with the  object of the provider
+        return view('providers.edit', compact('desiredProvider'));
+    }
+    // =================================== update method ===================================
+
+    // method that store in data base the provider modified information
+    public function update($id, Request $modProvider)
+    {
+        
+        // assing  each of the modified information of the $request that comes 
+        // from the view, to their own variable
+        $name = $modProvider->name;
+        $phone = $modProvider->phone;
+        $address = $modProvider->address;
+        // create the sql query
+        $sql = "update `providers` set name = ?, `phone` = ?, `address` = ? where id = ? ";
+        // save the new data 
+        $updateOperation = DB::update($sql, [$name,  $phone, $address, $id]);
+        // validate the operation
+        if ($updateOperation) {
+            // if this is successfully made return user to the index view 
+            return redirect()->to("/providers");
+        } else {
+            // if not, then show a messaage
+            return "no se pudo realizar la operation";
+        }
     }
 }
